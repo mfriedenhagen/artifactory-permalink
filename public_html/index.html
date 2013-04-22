@@ -1,0 +1,47 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My Search</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- script type="text/javascript" src="js/bootstrap.js"></script-->
+        <style type="text/css" src='css/bootstrap.css'></style>
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript">
+            $.ajax(
+                {
+                    url: "/artifactory/api/search/gavc?repos=repo1-cache&g=commons-logging&a=commons-logging&v=1.1.2",
+                    type: "GET",
+                    dataType: "json",
+                    error: function() {
+                        alert("Error");
+                    },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-Result-Detail", "info");
+                    },
+                    success: function(data) {
+                        var items = [];
+
+                        $.each(data.results, function(key, val) {
+                            items.push('<li id="' + key + '"><a href="' + val.downloadUri + '">' + val.path + '</li>');
+                        });
+
+                        $('<ul/>', {
+                            'class': 'my-new-list',
+                            html: items.join('')
+                        }).replaceAll('#result');
+                    },
+                }
+            );
+        </script>
+    </head>
+    <body>
+        <div>TODO write content</div>
+        <div>
+            <ul id='result'></ul>
+        </div>
+    </body>
+</html>
