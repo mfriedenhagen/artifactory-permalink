@@ -21,8 +21,7 @@
                                 }
                             }
                         );
-
-                        $(items.join('')).replaceAll('#repositories')
+                        $(items.join('')).replaceAll('#repositories');
                     }
                 );
                 var groupId = getParameterByName('g');
@@ -31,7 +30,7 @@
                 $('#groupId').val(groupId);
                 $('#artifactId').val(artifactId);
                 $('#version').val(version);
-                if (groupId != none && artifactId != none && version != none && repositoryId != none) {
+                if (groupId !== "" && artifactId !== "" && version !== "" && repositoryId !== "") {
                     showArtifacts(repositoryId, groupId, artifactId, version);
                 }
             }
@@ -61,7 +60,7 @@
 
                             $('<table/>', {
                                 'id': 'results',
-                                'class': 'table table-hover',
+                                'class': 'table table-striped table-bordered',
                                 html: items.join('')
                             }).replaceAll('#results');
                         }
@@ -82,11 +81,11 @@
         </script>
     </head>
     <body>
-        <h1>Search artifacts</h1>
-        <div>
+        <div class="container">
+            <h1>Search artifacts</h1>
             <div>
                 <form id='search' action='#' method="GET">
-                    <table class="table table-hover">
+                    <table class="table table-striped table-bordered">
                         <tr>
                             <th>Repositories</th>
                             <td><select id="repositoryId" name="repos">
