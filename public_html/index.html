@@ -3,23 +3,31 @@
     <head>
         <title>My Search</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <!-- script type="text/javascript" src="js/bootstrap.js"></script-->
-        <style type="text/css" src='css/bootstrap.css'></style>
         <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/bootstrap.js"></script>
+        <link rel="stylesheet" type="text/css" href='css/bootstrap.css'>
         <script type="text/javascript">
-            function showRepositories() {
+            function initializeForm() {
+                var repositoryId = getParameterByName('repositoryId');
                 $.getJSON("/artifactory/api/repositories?type=LOCAL",
                     function(data) {
                         var items = [];
                         $.each(data,
                             function(key, data) {
-                                items.push('<option name="' + data.key + '">' + data.key + '</option>');
+                                if (data.key === repositoryId) {
+                                    items.push('<option name="' + data.key + '" selected>' + data.key + '</option>');
+                                } else {
+                                    items.push('<option name="' + data.key + '">' + data.key + '</option>');
+                                }
                             }
                         );
 
                         $(items.join('')).replaceAll('#repositories')
                     }
                 );
+                $('#groupId').val(getParameterByName('groupId'));
+                $('#artifactId').val(getParameterByName('artifactId'));
+                $('#version').val(getParameterByName('version'));
             }
             function showArtifacts(repository, groupId, artifactId, version) {
                 $.ajax(
@@ -47,31 +55,41 @@
 
                             $('<table/>', {
                                 'id': 'results',
-                                'class': 'my-new-list',
+                                'class': 'table-striped',
                                 html: items.join('')
                             }).replaceAll('#results');
-                        },
+                        }
                     }
                 );
             }
-            showRepositories();
+            function getParameterByName(name) {
+                name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+                var regexS = "[\\?&]" + name + "=([^&#]*)";
+                var regex = new RegExp(regexS);
+                var results = regex.exec(window.location.search);
+                if(results === null) {
+                    return "";
+                } else {
+                  return decodeURIComponent(results[1].replace(/\+/g, " "));
+                }
+            }
         </script>
     </head>
-    <body onload="showRepositories();">
+    <body>
         <h1>Search artifacts</h1>
         <div>
             <form id='search' action='#' method="GET">
-                <table>
+                <table class="table-striped">
                     <tr>
                         <th>Repositories</th>
-                        <td><select id="repositoryId">
+                        <td><select id="repositoryId" name="repositoryId">
                                 <option id="repositories">
                             </select>
                         </td>
                     </tr>
-                    <tr><th>GroupId</th><td><input type="text" id="groupId"></td></tr>
-                    <tr><th>ArtifactId</th><td><input type="text" id="artifactId"></td></tr>
-                    <tr><th>Version</th><td><input type="text" id="version"></td></tr>
+                    <tr><th>GroupId</th><td><input type="text" id="groupId" name="groupId"></td></tr>
+                    <tr><th>ArtifactId</th><td><input type="text" id="artifactId" name="artifactId"></td></tr>
+                    <tr><th>Version</th><td><input type="text" id="version" name="version"></td></tr>
                     <tr><th colspan="2"><input type="submit" id="Search"></th></tr>
                 </table>
             </form>
@@ -83,9 +101,10 @@
                         return true;
                     }
             );
+            $(initializeForm());
         </script>
         <div>
-            <table id='results'></table>
+            <table id='results' class="table-striped"></table>
         </div>
     </body>
 </html>
