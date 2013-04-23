@@ -11,35 +11,86 @@ and open the template in the editor.
         <style type="text/css" src='css/bootstrap.css'></style>
         <script type="text/javascript" src="js/jquery.js"></script>
         <script type="text/javascript">
-            $.ajax(
-                {
-                    url: "/artifactory/api/search/gavc?repos=repo1-cache&g=commons-logging&a=commons-logging&v=1.1.2",
-                    type: "GET",
-                    dataType: "json",
-                    error: function() {
-                        alert("Error");
-                    },
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-Result-Detail", "info");
-                    },
-                    success: function(data) {
+            function showRepositories() {
+                $.getJSON("/artifactory/api/repositories?type=LOCAL",
+                    function(data) {
                         var items = [];
+                        $.each(data,
+                            function(key, data) {
+                                items.push('<option name="' + data.key + '">' + data.key + '</option>');
+                            }
+                        );
 
-                        $.each(data.results, function(key, val) {
-                            items.push('<li id="' + key + '"><a href="' + val.downloadUri + '">' + val.path + '</li>');
-                        });
+                        $(items.join('')).replaceAll('#repositories')
+                    }
+                );
+            }
+            function showArtifacts(repository, groupId, artifactId, version) {
+                $.ajax(
+                    {
+                        url: "/artifactory/api/search/gavc?repos=" + repository + "&g=" + groupId + "&a=" + artifactId + "&v=" + version,
+                        type: "GET",
+                        dataType: "json",
+                        error: function() {
+                            alert("Error");
+                        },
+                        beforeSend: function(xhr) {
+                            xhr.setRequestHeader("X-Result-Detail", "info");
+                        },
+                        success: function(data) {
+                            var items = [];
 
-                        $('<ul/>', {
-                            'class': 'my-new-list',
-                            html: items.join('')
-                        }).replaceAll('#result');
-                    },
-                }
-            );
+                            $.each(data.results,
+                                function(key, val) {
+                                    items.push(
+                                        '<li id="' + key + '"><a href="' + val.downloadUri + '">' + val.path + '</a>&nbsp;' +
+                                        '(' + val.checksums.sha1 + ')</li>'
+                                    );
+                                }
+                            );
+
+                            $('<ul/>', {
+                                'id': 'result',
+                                'class': 'my-new-list',
+                                html: items.join('')
+                            }).replaceAll('#result');
+                        },
+                    }
+                );
+            }
+            function onFormSubmit() {
+
+            }
+            showRepositories();
         </script>
     </head>
-    <body>
-        <div>TODO write content</div>
+    <body onload="showRepositories();">
+        <h1>Search artifacts</h1>
+        <div>
+            <form id='search' action='#' method="GET">
+                <table>
+                    <tr>
+                        <th>Repositories</th>
+                        <td><select id="repositoryId">
+                                <option id="repositories">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr><th>GroupId</th><td><input type="text" id="groupId"></td></tr>
+                    <tr><th>ArtifactId</th><td><input type="text" id="artifactId"></td></tr>
+                    <tr><th>Version</th><td><input type="text" id="version"></td></tr>
+                    <tr><th colspan="2"><input type="submit" id="Search"></th></tr>
+                </table>
+            </form>
+        </div>
+        <script>
+            $('#search').submit(
+                    function() {
+                        showArtifacts($('#repositoryId').val(), $('#groupId').val(), $('#artifactId').val(), $('#version').val());
+                        return true;
+                    }
+            );
+        </script>
         <div>
             <ul id='result'></ul>
         </div>
