@@ -15,9 +15,9 @@
                         $.each(data,
                             function(key, data) {
                                 if (data.key === repositoryId) {
-                                    items.push('<option name="' + data.key + '" selected>' + data.key + '</option>');
+                                    items.push('<option id="' + data.key + '" selected>' + data.key + '</option>');
                                 } else {
-                                    items.push('<option name="' + data.key + '">' + data.key + '</option>');
+                                    items.push('<option id="' + data.key + '">' + data.key + '</option>');
                                 }
                             }
                         );
