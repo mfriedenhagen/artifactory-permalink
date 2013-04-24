@@ -51,8 +51,8 @@
                                 $('<div/>', {
                                    'id': 'results',
                                    'class': 'alert alert-error',
-                                   html: 'No results found!'
-                                });
+                                   html: '<strong>No results found!</strong>'
+                                }).replaceAll('#results');
                             } else {
                                 var items = [];
                                 items.push("<tr><th>URL</th><th>SHA1</th></tr>")
