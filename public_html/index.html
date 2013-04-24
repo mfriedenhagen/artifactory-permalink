@@ -48,7 +48,7 @@
                         },
                         success: function(data) {
                             //noinspection JSUnresolvedVariable
-                            const results = data.results;
+                            var results = data.results;
                             if (results.length === 0) {
                                 $('<div/>', {
                                    'id': 'results',
